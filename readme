@@ -1,0 +1,57 @@
+# dockerIf
+
+A C API to interact with the Docker socket, abstracts some common uses cases for me
+
+Slowly Adding
+
+
+### Installing
+
+A makefile is provided, so the usual steps of make and make install
+
+```
+make
+make install
+```
+This will generate a static archive (.a) and install it in /usr/local/lib.
+
+## Running the tests
+
+No Tests yet
+
+
+### How to use
+
+Explain what these tests test and why
+
+```
+#include <cDocker.h>
+//Define a context object
+SocketContext ctx;
+
+//Initialize
+//          *ctx    Docker Version             Docker Socket     Hostname (docker.sock if NULL)
+dockerIfInit(&ctx,      "v1.24",         "/var/run/docker.sock",           NULL                );
+
+
+
+//Destroy context once done
+cDockerDestroy(&ctx);
+```
+
+compile with the
+```
+-ldockerIf
+```
+flag
+
+
+## Versioning
+
+Version TBD (0.01 Right Now)
+
+## Authors
+
+* Jeremy
+
+
