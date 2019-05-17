@@ -5,16 +5,14 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include "json.h"
-#include "json_parser.h"
+#include "include/dockerIfParser.h"
+#include "../jsoncpp/json.h"
+#include "../jsoncpp/json-forwards.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
 
 using namespace std;
 
-int readDockerImages(char *in, size_t len, DockerImagesList *imageList)
+extern "C" int dockerIfImageLs(char *in, size_t len, DockerImagesList *imageList)
 {
 	Json::CharReaderBuilder rbuilder;
 	std::unique_ptr<Json::CharReader> const reader(rbuilder.newCharReader());
@@ -63,23 +61,3 @@ int readDockerImages(char *in, size_t len, DockerImagesList *imageList)
 
 }
 
-
-int readDockerBackGroundContainers(char *in, size_t len, DockerContainerBackground *container)
-{
-	Json::CharReaderBuilder rbuilder;
-	std::unique_ptr<Json::CharReader> const reader(rbuilder.newCharReader());
-
-	Json::Value obj;
-	JSONCPP_STRING errs;
-
-	reader->parse(in, (in + len), &obj, &errs);
-
-	snprintf(container->id, sizeof(container->id), "%s", obj["Id"].asString().c_str());
-
-	return 1;
-
-}
-
-#ifdef __cplusplus
-} // closing brace for extern "C"
-#endif /* __cplusplus */

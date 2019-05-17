@@ -2,6 +2,8 @@
 
 A C API to interact with the Docker socket, abstracts some common uses cases for me
 
+Note: This uses JSONCPP from https://github.com/open-source-parsers/jsoncpp
+
 Slowly Adding
 
 

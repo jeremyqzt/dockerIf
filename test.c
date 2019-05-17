@@ -7,17 +7,20 @@
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "dockerIfParser/include/dockerIfParser.h"
+#include "dockerIfParser/include/dockerIfHeaderParser.h"
 
+int dockerIfImageLs(char *in, size_t len, DockerImagesList *imageList);
 
 int main()
 {
 	char theString[10000] = {0};
 	SocketContext ctx;
-
+	DockerImagesList *images;
 	dockerIfInit(&ctx, "v1.24", "/var/run/docker.sock", NULL);
 
 	dockerIfGet(&ctx, "images/json", theString, sizeof(theString));
+	dockerIfImageLs(theString, sizeof(theString), images);
+
 	printf("%d\n", dockerIfParseHeader(theString));
 
 	int size = strlen("{\"Image\": \"ubuntu\"}");
