@@ -8,21 +8,22 @@
 #define HTTP_SERVER_ERROR 500
 #define HTTP_UNKNOWN -1
 
+#define COMMON_LEN 128
+#define MAX_REPO_TAGS 10
 
 typedef struct
 {
-	char *ptr;
-	size_t len;
-} DockerOutStringStruct;
-
-typedef struct
-{
-	char containerId[128];
-	char parentId[128];
-	char repoTags[128];
-	char labels[128];
-	char creatDateTime[32];
+	int containers;
+	char containerId[COMMON_LEN];
+	char parentId[COMMON_LEN];
+	//10 repo tags populated maximum
+	int numRepoTags;
+	char repoTags[MAX_REPO_TAGS][32];
+	char labels[COMMON_LEN];
+	char creatDateTime[COMMON_LEN];
 	int approximateSize;
+	int sharedSize;
+	int virtualSize;
 } DockerImage;
 
 
@@ -36,15 +37,14 @@ typedef struct
 typedef struct
 {
 	bool init;
-	char version[8];
-	DockerOutStringStruct dockerString;
+	char version[COMMON_LEN];
 } libDockerCtx;
 
 
 typedef struct
 {
-	char id[32];
-	char warnings[32];
+	char id[COMMON_LEN];
+	char warnings[COMMON_LEN];
 } DockerContainerBackground;
 
 int dockerIfParseHeader(char *dockerResp);

@@ -1,4 +1,4 @@
-# dockerIf
+# python-traceroute
 
 A C API to interact with the Docker socket, abstracts some common uses cases for me
 
@@ -7,7 +7,7 @@ Note: This uses JSONCPP from https://github.com/open-source-parsers/jsoncpp
 Slowly Adding
 
 
-### Installing
+Installing:
 
 A makefile is provided, so the usual steps of make and make install
 
@@ -15,45 +15,20 @@ A makefile is provided, so the usual steps of make and make install
 make
 make install
 ```
-This will generate a static archive (.a) and install it in /usr/local/lib.
 
-## Running the tests
+# How to use
 
-No Tests yet
-
-
-### How to use
-
-Explain what these tests test and why
-
-```
-#include <cDocker.h>
-//Define a context object
+//Create contex
 SocketContext ctx;
+DockerImagesList images;
 
-//Initialize
-//          *ctx    Docker Version             Docker Socket     Hostname (docker.sock if NULL)
-dockerIfInit(&ctx,      "v1.24",         "/var/run/docker.sock",           NULL                );
+//Initialize Context
+dockerIfInit(&ctx, "v1.24", "/var/run/docker.sock", NULL);
 
+//Read Images
+dockerIfGet(&ctx, "images/json", theString, sizeof(theString));
 
-
-//Destroy context once done
-cDockerDestroy(&ctx);
-```
-
-compile with the
-```
--ldockerIf
-```
-flag
-
-
-## Versioning
-
-Version TBD (0.01 Right Now)
-
-## Authors
-
-* Jeremy
-
+//Parsing
+ptr = strchr(theString, '[');
+dockerIfImageLs(ptr, strlen(ptr), &images);
 

@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
 AR = ar
-CFLAGS = -Wall -O2
+CFLAGS = -Wall -O2 -g
 
 OBJFILE = dockerIf/dockerIf.c dockerIfParser/dockerIfHeaderParser.c
 CXXFILES = jsoncpp/jsoncpp.cpp dockerIfParser/dockerIfParser.cpp
