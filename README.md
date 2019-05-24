@@ -1,4 +1,4 @@
-#Docker Interface for C
+# Docker Interface for C
 
 A C API to interact with the Docker socket, abstracts some common uses cases for me
 
@@ -17,7 +17,7 @@ make install
 ```
 
 # How to use
-
+```
 //Create contex
 SocketContext ctx;
 DockerImagesList images;
@@ -32,3 +32,7 @@ dockerIfGet(&ctx, "images/json", theString, sizeof(theString));
 ptr = strchr(theString, '[');
 dockerIfImageLs(ptr, strlen(ptr), &images);
 
+//Freeing
+dockerIfImageLsFree(&images);
+dockerIfDestroy(&ctx);
+```
