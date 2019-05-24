@@ -7,7 +7,7 @@
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "dockerIfParser/include/dockerIfParser.h"
+#include "dockerIfParser/include/dockerIfParserC.h"
 
 void testImageLs(DockerImagesList *imageList);
 

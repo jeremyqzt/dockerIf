@@ -1,4 +1,4 @@
-# python-traceroute
+#Docker Interface for C
 
 A C API to interact with the Docker socket, abstracts some common uses cases for me
 

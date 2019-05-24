@@ -9,7 +9,7 @@ CXXFILES = jsoncpp/jsoncpp.cpp dockerIfParser/dockerIfParser.cpp
 TARGET = libdockerIf.so
 TARGETCPP = libdockerIfParser.so
 
-HEADER = dockerIf/include/dockerIf.h dockerIfParser/include/dockerIfHeaderParser.h dockerIfParser/include/dockerIfParser.h
+HEADER = dockerIf/include/dockerIf.h dockerIfParser/include/dockerIfParser.h
 TEST = test
 TEST_OBJ = test.o
 LDLIBS = -ldockerIf -ldockerIfParser

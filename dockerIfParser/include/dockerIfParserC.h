@@ -1,7 +1,8 @@
-#ifndef DOCKER_IF_HEADER_PARSER_H
-#define DOCKER_IF_HEADER_PARSER_H
+#ifndef DOCKER_IF_PARSER_C_H
+#define DOCKER_IF_PARSER_C_H
 
 #include <stdbool.h>
+
 
 #define HTTP_OK 200
 #define HTTP_NOT_FOUND 404
@@ -10,6 +11,14 @@
 
 #define COMMON_LEN 128
 #define MAX_REPO_TAGS 10
+
+enum
+{
+	PARSE_OKAY = 0,
+	PARSE_FAIL_JSON,
+	PARSE_FAIL_GENERIC
+} dockerIfParserCode;
+
 
 typedef struct
 {
@@ -48,5 +57,7 @@ typedef struct
 } DockerContainerBackground;
 
 int dockerIfParseHeader(char *dockerResp);
+int dockerIfImageLs(char *in, size_t len, DockerImagesList *imageList);
+int dockerIfImageLsFree(DockerImagesList *imageList);
 
 #endif
