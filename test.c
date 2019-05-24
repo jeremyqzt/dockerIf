@@ -7,9 +7,8 @@
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "dockerIfParser/include/dockerIfHeaderParser.h"
+#include "dockerIfParser/include/dockerIfParser.h"
 
-int dockerIfImageLs(char *in, size_t len, DockerImagesList *imageList);
 void testImageLs(DockerImagesList *imageList);
 
 
@@ -21,16 +20,25 @@ int main()
 	DockerImagesList images;
 
 	dockerIfInit(&ctx, "v1.24", "/var/run/docker.sock", NULL);
-	dockerIfGet(&ctx, "images/json", theString, sizeof(theString));
+	if (0 > dockerIfGet(&ctx, "images/json", theString, sizeof(theString)))
+	{
+		printf("Failed to read docker images\n");
+		exit(-1);
+	}
+
 	ptr = strchr(theString, '[');
-	dockerIfImageLs(ptr, strlen(ptr), &images);
+	if (PARSE_OKAY != dockerIfImageLs(ptr, strlen(ptr), &images))
+	{
+		printf("Failed to parse docker images\n");
+		exit(-1);
+	}
 	testImageLs(&images);
 
 	//int size = strlen("{\"Image\": \"ubuntu\"}");
 	//dockerIfPost(&ctx, "containers/create", "{\"Image\": \"ubuntu\"}", size, theString, sizeof(theString));
 
 	//printf("%s", theString);
-	free(images.dockerImages);
+	dockerIfImageLsFree(&images);
 	dockerIfDestroy(&ctx);
 
 }

@@ -80,7 +80,7 @@ int dockerIfGet(SocketContext *ctx, char *request,
 	int received = -1;
 
 	snprintf(sendLine,
-		1024,
+		REQ_MAX_LEN,
 		"GET /%s/%s HTTP/1.1\r\n"
 		"Content-Type: application/json\r\n"
 		"Host: %s\r\n"
@@ -102,7 +102,7 @@ int dockerIfGet(SocketContext *ctx, char *request,
 		}
 	}
 
-	return DOCKER_IF_HTTP;
+	return -DOCKER_IF_HTTP;
 }
 
 
@@ -128,7 +128,7 @@ int dockerIfPost(SocketContext *ctx, char *request, char *postContent,
 	int received = -1;
 
 	snprintf(sendLine,
-		1024,
+		REQ_MAX_LEN,
 		"POST /%s/%s HTTP/1.1\r\n"
 		"Content-Type: application/json\r\n"
 		"Host: %s\r\n"

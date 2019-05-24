@@ -13,6 +13,19 @@ using namespace std;
 
 
 
+/**
+ *  @brief               Parses a return JSON string from a GET request
+ *                       on images/json from the docker socket
+ *
+ *  Note: This function allocates memory, the corresponding dockerIfImageLsFree()
+ *        Must be called after calling this function.
+ *
+ *  @param in            JSON string to parse
+ *  @param len           Size of the string to parse
+ *  @param imageList     Pointer to the output of the parsing
+ *
+ *  @returns             Status about the parsing (dockerIfParserCode)
+ **/
 extern "C" int dockerIfImageLs(char *in, size_t len, DockerImagesList *imageList)
 {
 	Json::CharReaderBuilder rbuilder;
@@ -21,9 +34,11 @@ extern "C" int dockerIfImageLs(char *in, size_t len, DockerImagesList *imageList
 	Json::Value obj;
 	JSONCPP_STRING errs;
 
+	memset(imageList, 0, sizeof(DockerImagesList));
+
 	if (!reader->parse(in, (in + len), &obj, &errs))
 	{
-		return -1;
+		return PARSE_FAIL_JSON;
 	}
 
 	int totalImages = obj.size();
@@ -42,8 +57,6 @@ extern "C" int dockerIfImageLs(char *in, size_t len, DockerImagesList *imageList
 					sizeof(imageList->dockerImages[images].repoTags[tags]),
 					"%s",
 					obj[images]["RepoTags"][tags].asString().c_str());
-
-			cout << imageList->dockerImages[images].repoTags[tags] << endl;
 		}
 
 		imageList->dockerImages[images].containers = obj[images]["Containers"].asInt();
@@ -69,10 +82,27 @@ extern "C" int dockerIfImageLs(char *in, size_t len, DockerImagesList *imageList
 		imageList->dockerImages[images].sharedSize = obj[images]["SharedSize"].asInt();
 		imageList->dockerImages[images].virtualSize = obj[images]["VirtualSize"].asInt();
 
-
 	}
 
-	return 1;
+	return PARSE_OKAY;
 
+}
+
+
+
+/**
+ *  @brief               If necessary, frees the passed in pointer
+ *                       for a dockerIfImageLs() call
+ *
+ *  @param imageList     Pointer to the docker image list to free
+ *
+ *  @returns             Void
+ **/
+extern "C" void dockerIfImageLsFree(DockerImagesList *imageList)
+{
+	if (imageList->dockerImages)
+	{
+		free(imageList->dockerImages);
+	}
 }
 
