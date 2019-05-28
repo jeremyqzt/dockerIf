@@ -35,6 +35,7 @@ typedef struct
 
 int dockerIfDestroy(SocketContext *ctx);
 int dockerIfPost(SocketContext *ctx, char *request, char *postContent, int contentLen, char *outString, size_t outStringLen);
+int dockerIfPostTar(SocketContext *ctx, char *request, char *path, char *outString, size_t outStringLen);
 int dockerIfGet(SocketContext *ctx, char *request, char *outString, size_t outStringLen);
 int dockerIfInit(SocketContext *ctx, char *version, char *path, char *host);
 

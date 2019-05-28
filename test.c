@@ -20,6 +20,7 @@ int main()
 	DockerImagesList images;
 
 	dockerIfInit(&ctx, "v1.24", "/var/run/docker.sock", NULL);
+/*
 	if (0 > dockerIfGet(&ctx, "images/json", theString, sizeof(theString)))
 	{
 		printf("Failed to read docker images\n");
@@ -36,9 +37,11 @@ int main()
 
 	//int size = strlen("{\"Image\": \"ubuntu\"}");
 	//dockerIfPost(&ctx, "containers/create", "{\"Image\": \"ubuntu\"}", size, theString, sizeof(theString));
-
-	//printf("%s", theString);
-	dockerIfImageLsFree(&images);
+*/
+	dockerIfPostTar(&ctx, "build?t=test3", "/root/dockerIf/Dockerfiles/dockerfile.tar.gz", theString, sizeof(theString));
+	sleep(3);
+	printf("%s\n", theString);
+	//dockerIfImageLsFree(&images);
 	dockerIfDestroy(&ctx);
 
 }
