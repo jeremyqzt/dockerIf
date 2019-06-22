@@ -7,9 +7,10 @@ LDFLAGS = -shared
 OBJFILE = dockerIf.o dockerIfHeaderParser.o
 TARGET = libdockerIf.so
 
-HEADER = dockerIf/include/dockerIf.h
+HEADER = include/dockerIf.h
 TEST = test
 TEST_OBJ = test.o
+TEST_SRC = test.c
 LDLIBS = -ldockerIf
 
 ifeq ($(PREFIX),)
@@ -24,13 +25,15 @@ $(TARGET): $(OBJFILE)
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(TEST): $(TEST_OBJ)
+	$(CC) $(CFLAGS) $(LDLIBS) $< -o $@
+
 clean:
 	rm -rf *.o $(TARGET) test *.so
 
-install: $(TARGET) $(TARGETCPP)
+install: $(TARGET)
 	install -d $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(TARGET) $(DESTDIR)$(PREFIX)/lib/
-	install -m 644 $(TARGETCPP) $(DESTDIR)$(PREFIX)/lib/
 	install -d $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(HEADER) $(DESTDIR)$(PREFIX)/include/
 

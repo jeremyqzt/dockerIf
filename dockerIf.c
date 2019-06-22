@@ -37,6 +37,7 @@ int dockerIfInit(SocketContext *ctx, char *version, char *path, char *host)
 	snprintf(ctx->sockHost, sizeof(ctx->sockHost),
 		"%s", host == NULL ? DEFAULT_HOST: host);
 
+	//As i've learned... only TCP works...
 	ctx->dockerSock = socket(AF_UNIX, SOCK_STREAM, 0);
 
 	server.sun_family = AF_UNIX;
@@ -194,7 +195,7 @@ int dockerIfPostTar(SocketContext *ctx, char *request,
 
 	received = send(ctx->dockerSock, sendLine, sizeof(sendLine), 0);
 
-	while(len = fread(tarStream, 1, REQ_MAX_LEN, filePointer))
+	while((len = fread(tarStream, 1, REQ_MAX_LEN, filePointer)))
 	{
 		received = send(ctx->dockerSock, tarStream, len, 0);
 
