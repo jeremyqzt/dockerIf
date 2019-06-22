@@ -14,6 +14,12 @@
 
 #define HTTP_VER "HTTP/1.1"
 
+//HTTP Status Codes
+#define HTTP_OK 200
+#define HTTP_NOT_FOUND 404
+#define HTTP_SERVER_ERROR 500
+#define HTTP_UNKNOWN -1
+
 //Status
 enum
 {
@@ -38,6 +44,7 @@ int dockerIfPost(SocketContext *ctx, char *request, char *postContent, int conte
 int dockerIfPostTar(SocketContext *ctx, char *request, char *path, char *outString, size_t outStringLen);
 int dockerIfGet(SocketContext *ctx, char *request, char *outString, size_t outStringLen);
 int dockerIfInit(SocketContext *ctx, char *version, char *path, char *host);
+int dockerIfParseHeader(char *dockerResp);
 
 #endif
 

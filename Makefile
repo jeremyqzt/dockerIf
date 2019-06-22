@@ -4,7 +4,7 @@ AR = ar
 CFLAGS = -Wall -O2 -g
 LDFLAGS = -shared
 
-OBJFILE = dockerIf.o
+OBJFILE = dockerIf.o dockerIfHeaderParser.o
 TARGET = libdockerIf.so
 
 HEADER = dockerIf/include/dockerIf.h
