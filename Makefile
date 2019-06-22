@@ -2,37 +2,30 @@ CC = gcc
 CXX = g++
 AR = ar
 CFLAGS = -Wall -O2 -g
+LDFLAGS = -shared
 
-OBJFILE = dockerIf/dockerIf.c dockerIfParser/dockerIfHeaderParser.c
-CXXFILES = jsoncpp/jsoncpp.cpp dockerIfParser/dockerIfParser.cpp
-
+OBJFILE = dockerIf.o
 TARGET = libdockerIf.so
-TARGETCPP = libdockerIfParser.so
 
-HEADER = dockerIf/include/dockerIf.h dockerIfParser/include/dockerIfParser.h
+HEADER = dockerIf/include/dockerIf.h
 TEST = test
 TEST_OBJ = test.o
-LDLIBS = -ldockerIf -ldockerIfParser
+LDLIBS = -ldockerIf
 
 ifeq ($(PREFIX),)
 	PREFIX := /usr/local
 endif
 
-all: $(TARGET) $(TARGETCPP)
+all: $(TARGET)
 
 $(TARGET): $(OBJFILE)
-	$(CC) -fPIC -shared  $^ -o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJFILE)
 
-
-$(TARGETCPP): $(CXXFILES)
-	$(CXX) -fPIC -shared $^ -o $(TARGETCPP)
-
-
-$(TEST): $(TEST_OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf *.o $(TARGET) dockerIf/*.o dockerIfParser/*.o jsoncpp/*.o test *.so
+	rm -rf *.o $(TARGET) test *.so
 
 install: $(TARGET) $(TARGETCPP)
 	install -d $(DESTDIR)$(PREFIX)/lib/

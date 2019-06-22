@@ -183,8 +183,8 @@ int dockerIfPostTar(SocketContext *ctx, char *request,
 
 	snprintf(sendLine,
 		sizeof(sendLine),
-		"POST /build?t=test2 HTTP/1.1\r\n"
-		"Host: v1.24\r\n"
+		"POST /%s HTTP/1.1\r\n"
+		"Host: %s\r\n"
 		"Content-Type: application/x-tar\r\n"
 		"\r\n",
 		request,
@@ -205,6 +205,7 @@ int dockerIfPostTar(SocketContext *ctx, char *request,
 		}
 	}
 
+	received = send(ctx->dockerSock, "\r\n\r\n", sizeof("\r\n\r\n"), 0);
 
 	fclose(filePointer);
 
