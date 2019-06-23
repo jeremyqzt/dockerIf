@@ -1,10 +1,17 @@
-#include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
 #include <string.h>
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/sendfile.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 
 #include "include/dockerIf.h"
 
@@ -47,6 +54,14 @@ int dockerIfInit(SocketContext *ctx, char *version, char *path, char *host)
 	{
 		return -DOCKER_IF_NO_SOCKET;
 	}
+
+
+	int flag = 1;
+	if (0 != setsockopt(ctx->dockerSock, IPPROTO_TCP,
+			TCP_NODELAY, (char *) &flag, sizeof(int)))
+			{
+				return -DOCKER_IF_NO_SOCKET;
+			}
 
 	returnCode = connect(ctx->dockerSock,
 						(struct sockaddr *) &server,
@@ -178,37 +193,39 @@ int dockerIfPostTar(SocketContext *ctx, char *request,
 {
 	char sendLine[REQ_MAX_LEN] = {0};
 	int received = -1;
-	int len = -1;
-	FILE *filePointer;
-	char tarStream[REQ_MAX_LEN] = {0};
+	int filePointer = -1;
+	struct stat finfo;
+
+	filePointer = open(path, O_RDONLY);
+
+	fstat(filePointer, &finfo);
+
+	received = send(ctx->dockerSock, sendLine, sizeof(sendLine), 0);
+	received = sendfile(ctx->dockerSock, filePointer, NULL, finfo.st_size);
 
 	snprintf(sendLine,
 		sizeof(sendLine),
-		"POST /%s HTTP/1.1\r\n"
+		"POST /%s/%s HTTP/1.1\r\n"
 		"Host: %s\r\n"
 		"Content-Type: application/x-tar\r\n"
+		"Content-Length: %ld\r\n"
 		"\r\n",
+		ctx->version,
 		request,
-		ctx->version);
+		ctx->sockHost,
+		finfo.st_size);
 
-	filePointer = fopen(path, "rb");
+	printf("%s", sendLine);
 
-	received = send(ctx->dockerSock, sendLine, sizeof(sendLine), 0);
-
-	while((len = fread(tarStream, 1, REQ_MAX_LEN, filePointer)))
+	if(-1 == received)
 	{
-		received = send(ctx->dockerSock, tarStream, len, 0);
-
-		if(-1 == received)
-		{
-			fclose(filePointer);
-			return -DOCKER_IF_HTTP;
-		}
+		close(filePointer);
+		return -DOCKER_IF_HTTP;
 	}
 
-	received = send(ctx->dockerSock, "\r\n\r\n", sizeof("\r\n\r\n"), 0);
+	received = send(ctx->dockerSock, "\r\n", sizeof("\r\n"), 0);
 
-	fclose(filePointer);
+	close(filePointer);
 
 	if (0 < received)
 	{
@@ -220,6 +237,7 @@ int dockerIfPostTar(SocketContext *ctx, char *request,
 	}
 
 	return -DOCKER_IF_HTTP;
+
 }
 
 
