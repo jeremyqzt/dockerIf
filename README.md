@@ -27,6 +27,5 @@ dockerIfInit(&ctx, "v1.24", "/var/run/docker.sock", NULL);
 dockerIfGet(&ctx, "images/json", theString, sizeof(theString));
 
 //Freeing
-dockerIfImageLsFree(&images);
 dockerIfDestroy(&ctx);
 ```
