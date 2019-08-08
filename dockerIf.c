@@ -193,39 +193,42 @@ int dockerIfPostTar(SocketContext *ctx, char *request,
 {
 	char sendLine[REQ_MAX_LEN] = {0};
 	int received = -1;
-	int filePointer = -1;
-	struct stat finfo;
+	int len = -1;
+	FILE *filePointer;
+	char tarStream[REQ_MAX_LEN] = {0};
+	char boundry[REQ_MAX_LEN] = {0};
 
-	filePointer = open(path, O_RDONLY);
-
-	fstat(filePointer, &finfo);
-
-	received = send(ctx->dockerSock, sendLine, sizeof(sendLine), 0);
-	received = sendfile(ctx->dockerSock, filePointer, NULL, finfo.st_size);
+	snprintf(boundry, sizeof(boundry),
+		"---------------------------99614912995\r\n");
 
 	snprintf(sendLine,
 		sizeof(sendLine),
-		"POST /%s/%s HTTP/1.1\r\n"
+		"POST /build?t=%s HTTP/1.1\r\n"
 		"Host: %s\r\n"
-		"Content-Type: application/x-tar\r\n"
-		"Content-Length: %ld\r\n"
+		"Content-Type: application/x-tar; boundry=%s"
 		"\r\n",
-		ctx->version,
 		request,
-		ctx->sockHost,
-		finfo.st_size);
+		ctx->version,
+		boundry);
 
-	printf("%s", sendLine);
+	filePointer = fopen(path, "rb");
+	printf(sendLine);
+	received = send(ctx->dockerSock, sendLine, sizeof(sendLine), 0);
 
-	if(-1 == received)
+	while((len = fread(tarStream, 1, REQ_MAX_LEN, filePointer)))
 	{
-		close(filePointer);
-		return -DOCKER_IF_HTTP;
+		received = send(ctx->dockerSock, tarStream, len, 0);
+
+		if(-1 == received)
+		{
+			fclose(filePointer);
+			return -DOCKER_IF_HTTP;
+		}
 	}
 
-	received = send(ctx->dockerSock, "\r\n", sizeof("\r\n"), 0);
+	received = send(ctx->dockerSock, boundry, sizeof(boundry), 0);
 
-	close(filePointer);
+	fclose(filePointer);
 
 	if (0 < received)
 	{
